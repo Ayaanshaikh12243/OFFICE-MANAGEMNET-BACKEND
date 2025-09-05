@@ -1,0 +1,19 @@
+<h2>Employees</h2>
+<form action="/employees" method="POST">
+  <input type="text" placeholder="Employee Name" required />
+  <input type="text"  placeholder="Position" />
+  <select name="departmentId">
+    <% employees.length && employees[0].department ? employees[0].department.constructor.model('Department').find().then(depts => { %>
+      <% depts.forEach(d => { %>
+        <option value="<%= d._id %>"><%= d.name %></option>
+      <% }) %>
+    <% }) : null %>
+  </select>
+  <button type="submit">Add</button>
+</form>
+<ul>
+  <% employees.forEach(e => { %>
+    <li><%= e.name %> - <%= e.position %> - <%= e.department ? e.department.name : 'No Dept' %> - <%= e.location %></li>
+  <% }) %>
+</ul>
+<a href="/">Back</a>
