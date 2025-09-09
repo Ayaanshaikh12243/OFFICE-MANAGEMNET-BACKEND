@@ -1,19 +1,58 @@
-<h2>Employees</h2>
-<form action="/employees" method="POST">
-  <input type="text" placeholder="Employee Name" required />
-  <input type="text"  placeholder="Position" />
-  <select name="departmentId">
-    <% employees.length && employees[0].department ? employees[0].department.constructor.model('Department').find().then(depts => { %>
-      <% depts.forEach(d => { %>
-        <option value="<%= d._id %>"><%= d.name %></option>
-      <% }) %>
-    <% }) : null %>
-  </select>
-  <button type="submit">Add</button>
-</form>
-<ul>
-  <% employees.forEach(e => { %>
-    <li><%= e.name %> - <%= e.position %> - <%= e.department ? e.department.name : 'No Dept' %> - <%= e.location %></li>
-  <% }) %>
-</ul>
-<a href="/">Back</a>
+<%- include('partials/header') %>
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Employees</h1>
+    <a href="/employees/new" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add Employee</a>
+</div>
+
+<div class="bg-white p-4 rounded-lg shadow-md mb-6">
+    <form method="GET" action="/employees" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <input type="text" name="search" placeholder="Search by Name/Email..." value="<%= search %>" class="p-2 border rounded">
+        <select name="department" class="p-2 border rounded">
+            <option value="">All Departments</option>
+            <% departments.forEach(dept => { %>
+                <option value="<%= dept._id %>" <%= selectedDept == dept._id ? 'selected' : '' %>><%= dept.name %></option>
+            <% }) %>
+        </select>
+        <input type="text" name="jobTitle" placeholder="Filter by Job Title..." value="<%= jobTitle %>" class="p-2 border rounded">
+        <button type="submit" class="bg-green-500 text-white p-2 rounded">Filter</button>
+    </form>
+</div>
+
+<div class="bg-white shadow-md rounded overflow-x-auto">
+    <table class="min-w-full table-auto">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left">Name</th>
+                <th class="px-6 py-3 text-left">Email</th>
+                <th class="px-6 py-3 text-left">Job Title</th>
+                <th class="px-6 py-3 text-left">Department</th>
+                <th class="px-6 py-3 text-left">Supervisor</th>
+                <th class="px-6 py-3 text-left">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y">
+            <% employees.forEach(emp => { %>
+                <tr>
+                    <td class="px-6 py-4"><%= emp.firstName %> <%= emp.lastName %></td>
+                    <td class="px-6 py-4"><%= emp.email %></td>
+                    <td class="px-6 py-4"><%= emp.jobTitle %></td>
+                    <td class="px-6 py-4"><%= emp.department ? emp.department.name : 'N/A' %></td>
+                    <td class="px-6 py-4"><%= emp.supervisor ? `${emp.supervisor.firstName} ${emp.supervisor.lastName}` : 'N/A' %></td>
+                    <td class="px-6 py-4 flex items-center">
+                        <a href="/employees/edit/<%= emp._id %>" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
+                        <form action="/employees/delete/<%= emp._id %>" method="POST" onsubmit="return confirm('Are you sure?');">
+                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-6 flex justify-center">
+    <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>&search=<%= search %>&department=<%= selectedDept %>&jobTitle=<%= jobTitle %>" class="px-4 py-2 mx-1 rounded <%= currentPage == i ? 'bg-blue-500 text-white' : 'bg-white' %>"><%= i %></a>
+    <% } %>
+</div>
+<%- include('partials/footer') %>

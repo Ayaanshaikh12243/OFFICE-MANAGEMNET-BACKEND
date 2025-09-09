@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+<h1 class="text-3xl font-bold text-gray-800 mb-6"><%= title %></h1>
+<div class="bg-white p-8 rounded-lg shadow-md">
+    <form action="<%= employee._id ? '/employees/edit/' + employee._id : '/employees/new' %>" method="POST">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <input type="text" name="firstName" placeholder="First Name" value="<%= employee.firstName || '' %>" required class="p-2 border rounded">
+            <input type="text" name="lastName" placeholder="Last Name" value="<%= employee.lastName || '' %>" required class="p-2 border rounded">
+            <input type="email" name="email" placeholder="Email" value="<%= employee.email || '' %>" required class="p-2 border rounded">
+            <input type="text" name="jobTitle" placeholder="Job Title" value="<%= employee.jobTitle || '' %>" required class="p-2 border rounded">
+            
+            <select name="department" required class="p-2 border rounded">
+                <option value="">Select Department</option>
+                <% departments.forEach(dept => { %>
+                    <option value="<%= dept._id %>" <%= (employee.department && employee.department.toString() == dept._id.toString()) ? 'selected' : '' %>><%= dept.name %></option>
+                <% }) %>
+            </select>
+            <select name="supervisor" class="p-2 border rounded">
+                <option value="">Select Supervisor (Optional)</option>
+                <% supervisors.forEach(sup => { %>
+                    <% if (!employee._id || employee._id.toString() !== sup._id.toString()) { %>
+                        <option value="<%= sup._id %>" <%= (employee.supervisor && employee.supervisor.toString() == sup._id.toString()) ? 'selected' : '' %>><%= sup.firstName %> <%= sup.lastName %></option>
+                    <% } %>
+                <% }) %>
+            </select>
+
+            <select name="location[country]" id="country" class="p-2 border rounded">
+                <option value="">Select Country</option>
+            </select>
+            <select name="location[state]" id="state" class="p-2 border rounded" disabled>
+                <option value="">Select State</option>
+            </select>
+            <select name="location[city]" id="city" class="p-2 border rounded" disabled>
+                <option value="">Select City</option>
+            </select>
+        </div>
+        <button type="submit" class="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save Employee</button>
+    </form>
+</div>
+<script>
+    const existingLocation = {
+        country: "<%= employee.location ? employee.location.country : '' %>",
+        state: "<%= employee.location ? employee.location.state : '' %>",
+        city: "<%= employee.location ? employee.location.city : '' %>"
+    };
+</script>
+<%- include('partials/footer') %>
